@@ -1,17 +1,16 @@
 FROM alpine:latest AS builder
 
-RUN mkdir -p /app/bin && \ 
-    mkdir /app/src && \
-    mkdir /app/output 
+RUN mkdir -p /app/bin
+RUN mkdir /src
 
-COPY annotator /app/bin/
-RUN chmod +x /app/bin/annotator
-
-WORKDIR /app/src
+COPY <<project_name>> /app/bin/
+RUN chmod +x /app/bin/<<project_name>>
 
 FROM scratch
 
-COPY --from=builder /app /app
+COPY --from=builder /app/bin /app/bin
+COPY --from=builder /src /src
 
-ENTRYPOINT ["/app/bin/annotator", "parse", "/app/src", "--output", "/app/output/annotations.json", "--logtoconsole"]
+WORKDIR /src
 
+ENTRYPOINT ["/app/bin/<<project_name>>"]
